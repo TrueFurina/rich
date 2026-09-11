@@ -75,3 +75,14 @@ if __name__ == "__main__":
     result = render()
     print(result)
     print(repr(result))
+
+
+def test_width_narrower_than_console_does_not_crash():
+    """Regression test for #4214: Columns(width=...) with a requested width
+    that cannot fit (width + padding > console width) used to raise
+    ZeroDivisionError; it should fall back to a single column instead."""
+    console = Console(file=io.StringIO(), width=10, legacy_windows=False)
+    # 10 + 1 (default right padding) > 10 → column_count would be 0
+    console.print(Columns(["a", "b", "c"], width=10))
+    console.print(Columns(["a", "b", "c"], width=0))
+    console.print(Columns(["a", "b", "c"], width=100, column_first=True))

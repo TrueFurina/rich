@@ -121,7 +121,10 @@ class Columns(JupyterMixin):
         table.title = self.title
 
         if self.width is not None:
-            column_count = (max_width) // (self.width + width_padding)
+            # The requested width may not fit within the available width,
+            # e.g. Columns(width=10) on a console of width 10 with default
+            # padding (0, 1). Fall back to a single column in that case.
+            column_count = max(1, max_width // (self.width + width_padding))
             for _ in range(column_count):
                 table.add_column(width=self.width)
         else:
